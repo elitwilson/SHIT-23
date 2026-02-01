@@ -4,7 +4,7 @@ const MAX_KEY: u8 = 22;
 
 fn validate_key(key: u8) -> Result<()> {
     if key > MAX_KEY {
-        Err(anyhow!("key must be in range 0–{}", MAX_KEY))
+        Err(anyhow!("key must be in range 0-{}", MAX_KEY))
     } else {
         Ok(())
     }
@@ -13,13 +13,25 @@ fn validate_key(key: u8) -> Result<()> {
 pub fn encrypt(plaintext: &[u8], key: u8) -> Result<Vec<u8>> {
     validate_key(key)?;
     // Cast to u16 so addition can't overflow a u8, then mod 256 brings it back into range.
-    Ok(plaintext.iter().map(|&b| ((b as u16 + key as u16) % 256) as u8).collect())
+    Ok(plaintext
+        .iter()
+        .map(|&byte| {
+            let shifted = (byte as u16 + key as u16) % 256;
+            shifted as u8
+        })
+        .collect())
 }
 
 pub fn decrypt(ciphertext: &[u8], key: u8) -> Result<Vec<u8>> {
     validate_key(key)?;
     // Add 256 before subtracting so we never go negative, then mod 256 wraps back into range.
-    Ok(ciphertext.iter().map(|&b| ((b as u16 + 256 - key as u16) % 256) as u8).collect())
+    Ok(ciphertext
+        .iter()
+        .map(|&byte| {
+            let shifted = (byte as u16 + 256 - key as u16) % 256;
+            shifted as u8
+        })
+        .collect())
 }
 
 #[cfg(test)]
