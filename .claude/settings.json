@@ -1,5 +1,0 @@
-{
-  "enabledPlugins": {
-    "spi-rust-stack@spi-plugins": true
-  }
-}
